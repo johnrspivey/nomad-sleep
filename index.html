@@ -631,9 +631,70 @@ function renderCards() {
 }
 
 function toggleCard(id) { expandedId = expandedId===id?null:id; renderCards(); }
+let userLocation = null;
+
 function filterTab(el, cat) {
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active'); activeCategory=cat; expandedId=null; renderCards();
+  el.classList.add('active');
+  activeCategory=cat;
+  expandedId=null;
+  renderCards();
+  if(cat !== 'all') {
+    runFilterSearch(cat);
+  } else {
+    const box=document.getElementById('ai-box');
+    if(box) box.style.display='none';
+  }
+}
+
+async function runFilterSearch(category) {
+  const box=document.getElementById('ai-box');
+  const resp=document.getElementById('aiResponse');
+  box.style.display='block';
+  resp.innerHTML='<span class="ai-loading">Finding real options near you...</span>';
+
+  const cityHint = document.getElementById('cityInput').value.trim() || null;
+
+  const doFilter = async (lat, lng) => {
+    try {
+      const r = await fetch('/api/claude', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'filter', category, lat, lng, cityHint })
+      });
+      const data = await r.json();
+      const cleaned = (data.result||'No results found for this area.').replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1').replace(/#{1,3} /g,'');
+      resp.textContent = cleaned;
+    } catch(e) {
+      resp.textContent = 'Could not load local results. Enter a city in the search bar above and try again.';
+    }
+  };
+
+  if(userLocation) {
+    await doFilter(userLocation.lat, userLocation.lng);
+    return;
+  }
+
+  if(cityHint) {
+    await doFilter(null, null);
+    return;
+  }
+
+  if(navigator.geolocation) {
+    resp.innerHTML='<span class="ai-loading">Getting your location...</span>';
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        await doFilter(userLocation.lat, userLocation.lng);
+      },
+      async () => {
+        resp.innerHTML='<span class="ai-loading">Location unavailable — enter a city above and tap the filter again, or use the search bar.</span>';
+      },
+      { timeout: 8000 }
+    );
+  } else {
+    resp.textContent = 'Enter a city in the search bar above to see local results.';
+  }
 }
 function openFeedback(cardId,type,e) {
   e.stopPropagation();
