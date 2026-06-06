@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nomad Sleep — Budget overnight options for life on the road</title>
+  <meta name="description" content="Find the cheapest overnight options for vehicle dwellers — free parking, BLM land, truck stops, budget motels, and more." />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg2: #f5f5f3;
+      --bg3: #eeede9;
+      --text: #1a1a18;
+      --text2: #5a5a57;
+      --text3: #8a8a87;
+      --border: rgba(0,0,0,0.12);
+      --border2: rgba(0,0,0,0.22);
+      --border3: rgba(0,0,0,0.38);
+      --radius: 8px;
+      --radius-lg: 12px;
+      --green-bg: #EAF3DE; --green-text: #3B6D11;
+      --teal-bg: #E1F5EE;  --teal-text: #0F6E56;
+      --blue-bg: #E6F1FB;  --blue-text: #185FA5;
+      --purple-bg: #EEEDFE;--purple-text: #534AB7;
+      --amber-bg: #FAEEDA; --amber-text: #854F0B;
+      --pink-bg: #FBEAF0;  --pink-text: #993556;
+      --gray-bg: #F1EFE8;  --gray-text: #5F5E5A;
+      --red-bg: #FCEBEB;   --red-text: #A32D2D;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1c1a; --bg2: #252523; --bg3: #2e2e2b;
+        --text: #f0efe9; --text2: #a0a09a; --text3: #6a6a65;
+        --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.18); --border3: rgba(255,255,255,0.3);
+        --green-bg: #27500A; --green-text: #C0DD97;
+        --teal-bg: #085041;  --teal-text: #9FE1CB;
+        --blue-bg: #0C447C;  --blue-text: #B5D4F4;
+        --purple-bg: #3C3489;--purple-text: #CECBF6;
+        --amber-bg: #633806; --amber-text: #FAC775;
+        --pink-bg: #72243E;  --pink-text: #F4C0D1;
+        --gray-bg: #444441;  --gray-text: #D3D1C7;
+        --red-bg: #791F1F;   --red-text: #F09595;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg3); color: var(--text); font-size: 15px; min-height: 100vh; }
+    .app { max-width: 480px; margin: 0 auto; background: var(--bg3); min-height: 100vh; padding-bottom: 3rem; }
+
+    /* Header */
+    .header { background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 1.25rem 1rem 1rem; position: sticky; top: 0; z-index: 10; }
+    .header-top { display: flex; align-items: center; gap: 10px; }
+    .header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
+    .header p { font-size: 13px; color: var(--text2); margin-top: 3px; }
+    .header-icon { width: 36px; height: 36px; background: var(--text); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: var(--bg); font-size: 18px; flex-shrink: 0; }
+
+    /* Tier bar */
+    .tier-bar { display: flex; gap: 6px; padding: 0.75rem 1rem; background: var(--bg); border-bottom: 0.5px solid var(--border); }
+    .tier-item { flex: 1; text-align: center; padding: 8px 4px; background: var(--bg2); border-radius: var(--radius); border: 0.5px solid var(--border); }
+    .tier-cost { font-size: 13px; font-weight: 600; }
+    .tier-label { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+    /* Search */
+    .search-bar { display: flex; gap: 8px; padding: 0.75rem 1rem; background: var(--bg); border-bottom: 0.5px solid var(--border); }
+    .search-bar input { flex: 1; padding: 9px 12px; font-size: 14px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--bg2); color: var(--text); outline: none; }
+    .search-bar input:focus { border-color: var(--border3); background: var(--bg); }
+    .search-bar button { padding: 9px 14px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--text); color: var(--bg); cursor: pointer; white-space: nowrap; }
+    .search-bar button:hover { opacity: 0.85; }
+    .search-bar button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Filters */
+    .filter-row { display: flex; gap: 6px; padding: 0.75rem 1rem; background: var(--bg); border-bottom: 0.5px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .filter-row::-webkit-scrollbar { display: none; }
+    .tab { font-size: 12px; padding: 5px 11px; border-radius: 99px; border: 0.5px solid var(--border); background: var(--bg2); color: var(--text2); cursor: pointer; white-space: nowrap; }
+    .tab.active { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 500; }
+
+    /* Legend */
+    .legend { display: flex; gap: 8px; flex-wrap: wrap; padding: 0.6rem 1rem; background: var(--bg2); border-bottom: 0.5px solid var(--border); }
+    .legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text3); }
+
+    /* Cards */
+    .section { padding: 0.75rem 1rem 0; }
+    .section-label { font-size: 11px; font-weight: 600; color: var(--text3); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; }
+    .option-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 8px; }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; cursor: pointer; }
+    .card-title { font-size: 14px; font-weight: 600; }
+    .card-sub { font-size: 12px; color: var(--text2); margin-top: 3px; }
+
+    /* Badges */
+    .badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 7px; }
+    .badge { font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 500; }
+    .b-shower  { background: var(--teal-bg);   color: var(--teal-text); }
+    .b-toilet  { background: var(--blue-bg);   color: var(--blue-text); }
+    .b-sink    { background: var(--purple-bg); color: var(--purple-text); }
+    .b-safe    { background: var(--green-bg);  color: var(--green-text); }
+    .b-caution { background: var(--amber-bg);  color: var(--amber-text); }
+    .b-women   { background: var(--pink-bg);   color: var(--pink-text); }
+    .b-hair    { background: var(--gray-bg);   color: var(--gray-text); }
+
+    .cost-badge { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; }
+    .cost-free   { background: var(--green-bg);  color: var(--green-text); }
+    .cost-cheap  { background: var(--teal-bg);   color: var(--teal-text); }
+    .cost-paid   { background: var(--amber-bg);  color: var(--amber-text); }
+    .cost-varies { background: var(--gray-bg);   color: var(--gray-text); }
+
+    /* Card detail */
+    .card-detail { display: none; margin-top: 12px; border-top: 0.5px solid var(--border); padding-top: 12px; }
+    .card-detail.show { display: block; }
+    .detail-section { margin-bottom: 12px; }
+    .detail-section:last-child { margin-bottom: 0; }
+    .detail-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; color: var(--text3); }
+    .detail-title.women  { color: var(--pink-text); }
+    .detail-title.hair   { color: var(--purple-text); }
+    .detail-title.safety { color: var(--red-text); }
+    .detail-body { font-size: 13px; color: var(--text2); line-height: 1.65; }
+
+    /* Tips */
+    .tips { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+    .tip { display: flex; gap: 7px; font-size: 12px; color: var(--text2); align-items: flex-start; }
+    .tip-icon { flex-shrink: 0; width: 16px; margin-top: 1px; color: var(--text3); }
+    .tip.warn  .tip-icon { color: var(--amber-text); }
+    .tip.alert .tip-icon { color: var(--red-text); }
+    .tip.women .tip-icon { color: var(--pink-text); }
+    .tip.hair  .tip-icon { color: var(--purple-text); }
+
+    /* Feedback */
+    .feedback-bar { display: flex; align-items: center; gap: 6px; margin-top: 14px; padding-top: 12px; border-top: 0.5px solid var(--border); }
+    .feedback-label { font-size: 11px; color: var(--text3); margin-right: 2px; }
+    .fb-btn { display: flex; align-items: center; gap: 4px; font-size: 11px; padding: 4px 9px; border-radius: 99px; border: 0.5px solid var(--border2); background: var(--bg2); color: var(--text2); cursor: pointer; white-space: nowrap; }
+    .fb-btn:hover { border-color: var(--border3); color: var(--text); }
+    .fb-btn.confirm:hover, .fb-btn.confirm.active { background: var(--green-bg); color: var(--green-text); border-color: var(--green-text); }
+    .fb-btn.flag:hover,    .fb-btn.flag.active    { background: var(--amber-bg); color: var(--amber-text); border-color: var(--amber-text); }
+    .fb-btn.safety:hover,  .fb-btn.safety.active  { background: var(--red-bg);   color: var(--red-text);   border-color: var(--red-text); }
+    .fb-btn.tip-btn:hover, .fb-btn.tip-btn.active { background: var(--blue-bg);  color: var(--blue-text);  border-color: var(--blue-text); }
+
+    .feedback-form { margin-top: 10px; display: none; }
+    .feedback-form.show { display: block; }
+    .feedback-form textarea { width: 100%; padding: 8px 10px; font-size: 13px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--bg2); color: var(--text); outline: none; resize: none; font-family: inherit; line-height: 1.5; }
+    .feedback-form textarea:focus { border-color: var(--border3); }
+    .feedback-form input { width: 100%; padding: 7px 10px; font-size: 13px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--bg2); color: var(--text); outline: none; font-family: inherit; margin-top: 6px; }
+    .feedback-form input:focus { border-color: var(--border3); }
+    .feedback-actions { display: flex; gap: 6px; margin-top: 8px; }
+    .fb-submit { flex: 1; padding: 8px; font-size: 13px; font-weight: 500; border: none; border-radius: var(--radius); background: var(--text); color: var(--bg); cursor: pointer; }
+    .fb-submit:hover { opacity: 0.85; }
+    .fb-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+    .fb-cancel { padding: 8px 12px; font-size: 13px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: transparent; color: var(--text2); cursor: pointer; }
+    .fb-cancel:hover { background: var(--bg2); }
+    .feedback-thanks { font-size: 12px; color: var(--green-text); margin-top: 8px; display: none; }
+    .feedback-thanks.show { display: block; }
+
+    /* AI box */
+    .ai-box { margin: 0.75rem 1rem 0; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px; }
+    .ai-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text3); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+    .ai-response { font-size: 13px; color: var(--text2); line-height: 1.65; white-space: pre-wrap; }
+    .ai-loading { font-size: 13px; color: var(--text3); font-style: italic; }
+
+    .footer { text-align: center; padding: 2rem 1rem 1rem; font-size: 12px; color: var(--text3); line-height: 1.7; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="header-top">
+      <div class="header-icon"><i class="ti ti-steering-wheel" aria-hidden="true"></i></div>
+      <div>
+        <h1>Nomad Sleep</h1>
+        <p>Budget overnight options for life on the road</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tier-bar">
+    <div class="tier-item"><div class="tier-cost">$0</div><div class="tier-label">Free spots</div></div>
+    <div class="tier-item"><div class="tier-cost">$5–15</div><div class="tier-label">Low cost</div></div>
+    <div class="tier-item"><div class="tier-cost">$20–50</div><div class="tier-label">Budget motel</div></div>
+    <div class="tier-item"><div class="tier-cost">Varies</div><div class="tier-label">App-based</div></div>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" id="cityInput" placeholder="City, state or area..." />
+    <button id="searchBtn" onclick="doSearch()"><i class="ti ti-map-search" aria-hidden="true"></i> Find</button>
+  </div>
+
+  <div class="filter-row">
+    <div class="tab active" onclick="filterTab(this,'all')">All</div>
+    <div class="tab" onclick="filterTab(this,'free')">Free</div>
+    <div class="tab" onclick="filterTab(this,'parking')">Parking lots</div>
+    <div class="tab" onclick="filterTab(this,'public')">Public land</div>
+    <div class="tab" onclick="filterTab(this,'paid')">Budget paid</div>
+    <div class="tab" onclick="filterTab(this,'shower')">Has shower</div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="badge b-shower">shower</span></div>
+    <div class="legend-item"><span class="badge b-toilet">toilet</span></div>
+    <div class="legend-item"><span class="badge b-women">women tips</span></div>
+    <div class="legend-item"><span class="badge b-hair">hair tips</span></div>
+    <div class="legend-item"><span class="badge" style="background:var(--red-bg);color:var(--red-text);">safety</span></div>
+  </div>
+
+  <div id="ai-box" class="ai-box" style="display:none;">
+    <div class="ai-label"><i class="ti ti-sparkles" aria-hidden="true"></i> Local intel</div>
+    <div id="aiResponse" class="ai-response"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Overnight options</div>
+    <div id="cards"></div>
+  </div>
+
+  <div class="footer">
+    Nomad Sleep &mdash; built for people living the road life.<br/>
+    Tips crowdsourced from the community. Always verify locally.<br/>
+    Your feedback keeps this accurate for everyone.
+  </div>
+
+</div>
+
+<script>
+const SUPABASE_URL = 'https://ucjzeafqlqogceqaaqgc.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjanplYWZxbHFvZ2NlcWFhcWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NTc2ODIsImV4cCI6MjA5NjMzMzY4Mn0.ZDWIDQHZ5LlFXW60T6DwI3iV-7B7v7YQCpAkug2YQm8';
+
+const OPTIONS = [
+  {
+    id: 'truckstop', category: 'parking', hasShower: true,
+    title: 'Truck stops (Pilot, Flying J, Love\'s, TA/Petro)',
+    sub: 'Showers, restrooms, laundry — open 24/7',
+    cost: 'cheap', costLabel: '$12–15 shower',
+    badges: ['shower','toilet','sink','hair'],
+    overview: 'The single best hygiene resource on the road. Private shower rooms — full bathroom with shower, toilet, and sink — available for $12–15. Buy fuel and the shower is often discounted or free with points. Flying J and Pilot use the myRewards Plus app for shower credits.',
+    bathroom: 'Private, lockable shower rooms — not open stalls. Full-size shower, toilet, sink, mirror. Soap and sometimes shampoo provided. Towels included. Rooms are cleaned between uses. You get a code at the counter after paying. Usually 30–45 min timed.',
+    women: 'Among the safest public shower options on the road. Private rooms with locked doors are standard. Many locations have women-only shower wings. Attendants monitor the area. Menstrual products sometimes available at the counter or vending machine.',
+    hair: 'Decent water pressure and full-size mirrors. Bring your own conditioner and a wide-tooth comb. Outlets at the sink for a travel dryer or diffuser. Counter space is limited — a hanging toiletry bag solves this.',
+    safety: 'Well-lit, staffed 24/7, security cameras throughout. Among the safest overnight parking for solo travelers. Park near other vehicles, not isolated at the far edge of the lot.',
+    tips: [
+      { type: 'normal', text: 'myRewards Plus app (Flying J/Pilot): shower credits accumulate with fuel purchases' },
+      { type: 'normal', text: 'TA/Petro UltraOne loyalty: shower free after 50 gal fuel purchase' },
+      { type: 'hair', text: 'Ask for extra towels at the counter — two is better for long hair' },
+      { type: 'women', text: 'Trucker Path app shows nearby locations and shower wait times before you pull in' },
+    ]
+  },
+  {
+    id: 'walmart', category: 'parking', hasShower: false,
+    title: 'Walmart & Sam\'s Club',
+    sub: 'Parking lot overnight — most locations still allow it',
+    cost: 'free', costLabel: 'Free',
+    badges: ['toilet','caution'],
+    overview: 'The classic car camper overnight. Most Walmart locations allow overnight parking, though this has tightened in urban areas. The store is your 24/7 restroom. Call ahead or check crowd-sourced apps before committing.',
+    bathroom: 'Store restrooms open 24/7 at most locations. No shower. Sink access for sponge baths and basic grooming. Many Supercenters have family/single-occupancy restrooms which offer more privacy for changing and cleaning up.',
+    women: 'Family restrooms (single-occupancy) offer the most privacy — ask a greeter which aisle. Foot traffic drops significantly after 2–3am and restrooms become less monitored. Feminine hygiene products available in-store 24/7.',
+    hair: 'Sink usable for quick rinsing. Limited counter space. Not a real hair care spot — use a truck stop or gym for that.',
+    safety: 'Well-lit lots, store staff visible, cameras. Quality varies by neighborhood — check the area before pulling in after dark. Urban lots in high-crime areas are higher risk.',
+    tips: [
+      { type: 'normal', text: 'Call ahead — urban stores increasingly post "no overnight" signs' },
+      { type: 'normal', text: 'Park in back or side rows, away from entrances and cart corrals' },
+      { type: 'normal', text: 'Arrive after 9pm, leave before 8am — don\'t set up camp, just sleep' },
+      { type: 'alert', text: 'Avoid lots in known high-crime areas — check local crime map before stopping' },
+      { type: 'women', text: 'Family/single-occupancy restrooms: more privacy for hygiene routines' },
+    ]
+  },
+  {
+    id: 'planetfitness', category: 'paid', hasShower: true,
+    title: 'Planet Fitness (Black Card membership)',
+    sub: 'Shower + dryer + outlets daily — the nomad anchor',
+    cost: 'cheap', costLabel: '$25/mo',
+    badges: ['shower','sink','toilet','hair','women'],
+    overview: 'The single most underrated tool for long-term road life. A $25/month Black Card membership gets you into any Planet Fitness nationwide — including the shower. For full-time nomads this is the hygiene anchor that makes everything else manageable.',
+    bathroom: 'Full locker room: shower stalls, toilet stalls, multiple sinks with mirrors, outlets. Not private rooms like truck stops, but curtained stalls at most locations. Hair dryers built into the wall.',
+    women: 'Women\'s locker rooms are women-only, maintained separately. Hair dryers at the wall nearly universal. Outlets at mirrors for styling tools. Staff visible and on the floor during open hours. Generally safe and well-maintained.',
+    hair: 'Best hair care option on the road — by far. Hair dryers at every sink station. Outlets for flat irons and diffusers. Multiple mirrors at the right height. Counter space. You can fully wash, condition, detangle, and style here.',
+    safety: 'Staffed, access-controlled entry, cameras throughout public areas. One of the safest hygiene stops available.',
+    tips: [
+      { type: 'normal', text: '$10/mo Classic = one home location only. $25/mo Black Card = any location nationwide — get the Black Card' },
+      { type: 'hair', text: 'Visit mid-morning weekdays for mirror and outlet access without competition' },
+      { type: 'women', text: 'Confirm hair dryers at your specific location — nearly universal but call ahead' },
+      { type: 'normal', text: 'Day pass ($15) available if just passing through once' },
+    ]
+  },
+  {
+    id: 'cracker', category: 'parking', hasShower: false,
+    title: 'Cracker Barrel',
+    sub: 'RV-friendly parking — large lots, clean restrooms',
+    cost: 'free', costLabel: 'Free',
+    badges: ['toilet','safe'],
+    overview: 'Cracker Barrel officially welcomes RVs and doesn\'t typically hassle car campers. Almost always off a highway exit. Eat dinner there — the goodwill is worth it.',
+    bathroom: 'Clean, well-maintained restrooms. Closes with the restaurant, typically 10–11pm. No shower. Better maintained than most fast food stops.',
+    women: 'Restrooms are family-friendly and typically very clean. Not accessible overnight once the restaurant closes — plan your bathroom needs before they lock up.',
+    hair: 'Sinks available during open hours only. Quick freshening only.',
+    safety: 'Very safe. Family restaurant demographic, highway exit visibility, well-lit lots.',
+    tips: [
+      { type: 'normal', text: 'Eat dinner — management is far more welcoming if you\'re a customer' },
+      { type: 'alert', text: 'Restrooms close with the restaurant (~10–11pm) — use them before they lock' },
+      { type: 'normal', text: 'Call the specific location ahead to confirm overnight is OK' },
+    ]
+  },
+  {
+    id: 'blm', category: 'public', hasShower: false,
+    title: 'BLM land (Bureau of Land Management)',
+    sub: 'Free dispersed camping — 14-day limit, western U.S.',
+    cost: 'free', costLabel: 'Free',
+    badges: ['caution'],
+    overview: 'The backbone of long-term nomadic living in the western U.S. 245 million acres of free dispersed camping. No reservation, 14-day limit per spot. No facilities. Self-sufficiency required.',
+    bathroom: 'None. Cat holes (6 inches deep, 200 ft from water/camp) for waste. Pack out TP or use WAG bags. A solar camp shower bag is essential for stays longer than a night or two.',
+    women: 'A pop-up privacy tent ($20–40) is essential for bathing, changing, and using a portable toilet comfortably. Keep menstrual supplies well-stocked — resupply can be 30–60+ minutes away. Have a check-in plan with someone.',
+    hair: 'Solar shower bag ($10–15) hung from a vehicle or tree gives workable water for rinsing. Camp shampoo bars lather in cold water. Dry shampoo and braids between town runs. Budget 1 gallon minimum per hair wash.',
+    safety: 'Generally safe but isolation is real. Download offline maps before going in — cell signal often absent. Tell someone your location and check-in schedule. Solo women: stay near established dispersed areas rather than fully remote spots.',
+    tips: [
+      { type: 'normal', text: 'BLM Maps app shows exact land boundaries — free, essential' },
+      { type: 'alert', text: 'No cell signal in many areas — share your location before you lose signal' },
+      { type: 'women', text: 'Pop-up privacy shelter ($25) is non-negotiable for solo women on BLM land' },
+      { type: 'hair', text: 'Solar shower bag + camp shampoo bar = full hair wash anywhere with sun' },
+      { type: 'warn', text: 'Check fire restrictions before any flame — change seasonally' },
+    ]
+  },
+  {
+    id: 'nf', category: 'public', hasShower: false,
+    title: 'National Forest dispersed camping',
+    sub: 'Free camping outside designated campgrounds',
+    cost: 'free', costLabel: 'Free',
+    badges: ['caution'],
+    overview: 'Most National Forests allow free dispersed camping. Stay 100–200 ft from water, roads, and designated sites. 14-day limits. Same self-sufficiency requirements as BLM.',
+    bathroom: 'None. Cat hole system same as BLM. Some trailheads have vault toilets — locate on your route. Solar shower required for bathing.',
+    women: 'Privacy tent essential. Some forest roads see occasional vehicle traffic — site selection matters. High-elevation areas can be cold year-round.',
+    hair: 'Same approach as BLM. Fragrant hair products can attract wildlife — store sealed in vehicle at night.',
+    safety: 'Bears present in many forests. Store ALL scented items — toiletries, shampoo, menstrual products — in your vehicle, not in a tent or bag outside.',
+    tips: [
+      { type: 'alert', text: 'Bears are attracted to scented items — store all toiletries in your vehicle' },
+      { type: 'women', text: 'Menstrual products are scented — store in vehicle, double-bag used products' },
+      { type: 'hair', text: 'Fragrant shampoo and conditioner: seal in vehicle at night in bear country' },
+      { type: 'normal', text: 'Avenza Maps + MVUM shows which forest roads are legal to drive and camp near' },
+    ]
+  },
+  {
+    id: 'restarea', category: 'public', hasShower: false,
+    title: 'Rest areas & interstate stops',
+    sub: 'Legal 4–8 hr stays in most states — restrooms 24/7',
+    cost: 'free', costLabel: 'Free',
+    badges: ['toilet','caution'],
+    overview: 'Rest areas allow 4–8 hour stops in most states. Restrooms open 24/7. Useful in a pinch. Quality varies enormously — staffed highway rest areas are great, remote rural ones at night are not.',
+    bathroom: 'Restrooms open 24/7. Maintained on a schedule. Staffed rest areas (Florida, California) are very clean. Unstaffed rural rest areas can be rough after midnight.',
+    women: 'Safety varies by time and location. Staffed rest areas in high-traffic states: generally safe. Remote unstaffed rest areas at 3am: higher risk. Park in the most visible spot, near the building under lights. Trust your gut — if the lot feels wrong, move on.',
+    hair: 'Sink for basics only. No outlets typically. Use for tooth brushing and a quick face wash only.',
+    safety: 'Staffed rest areas: safe, cameras, attendants. Unstaffed rural rest areas late at night: not recommended for solo women. Park closest to the building under lighting.',
+    tips: [
+      { type: 'alert', text: 'Prohibited or time-limited in some states — posted signs are law' },
+      { type: 'alert', text: 'Remote unstaffed rest areas at night: not a safe solo overnight for women' },
+      { type: 'warn', text: 'Quality varies enormously — staffed FL and CA rest areas excellent; rural ones are not' },
+      { type: 'normal', text: 'Trucker Path app shows nearby truck stops with showers as a better alternative' },
+    ]
+  },
+  {
+    id: 'campground', category: 'paid', hasShower: true,
+    title: 'KOA & state park campgrounds',
+    sub: 'Paid sites with shower facilities — $20–45/night',
+    cost: 'paid', costLabel: '$20–45/night',
+    badges: ['shower','toilet','sink','safe','women'],
+    overview: 'When you need a real shower and a semi-permanent setup for a few days. KOAs are consistent and widely available. State park campgrounds are often cheaper and better maintained.',
+    bathroom: 'Centralized bathhouse with private shower stalls, toilet stalls, multiple sinks. Hot water usually reliable. Some older locations have coin-operated showers — carry quarters.',
+    women: 'Campground bathhouses are among the safest communal shower options. Check site layout before choosing your spot — well-lit paths to the bathhouse matter. Bring a flashlight for nighttime trips. Shower shoes are a must.',
+    hair: 'Full shower with decent pressure. Hanging mesh toiletry bag with hook is essential for stalls with no shelf. Allow extra dry time in humid climates.',
+    safety: 'Among the safest overnight options. Staffed entry, registered guests only, other campers nearby. Better choice than a rest area for solo women.',
+    tips: [
+      { type: 'normal', text: 'Reserve ahead — KOAs fill on weekends and holidays' },
+      { type: 'hair', text: 'Hanging mesh toiletry bag with hook: essential for campground shower stalls' },
+      { type: 'women', text: 'Shower shoes — non-negotiable in any communal shower facility' },
+      { type: 'warn', text: 'Coin-op showers exist at older campgrounds — carry quarters' },
+      { type: 'normal', text: 'KOA Value Kard ($30/yr) saves 10% at all locations' },
+    ]
+  },
+  {
+    id: 'motel', category: 'paid', hasShower: true,
+    title: 'Budget motel chains',
+    sub: 'Motel 6, Super 8, Econo Lodge, Red Roof Inn',
+    cost: 'paid', costLabel: '$30–65/night',
+    badges: ['shower','toilet','sink','hair'],
+    overview: 'When you need a real bed and a private bathroom. HotelTonight and Priceline Express Deals regularly cut these to $30–45 same-day. Private bathroom is the key advantage.',
+    bathroom: 'Private in-room bathroom: shower/tub, toilet, sink. Towels and soap provided. Total privacy. Hot water nearly guaranteed.',
+    women: 'Interior corridor motels — room doors open into a hallway, not the parking lot — are meaningfully safer than exterior corridor properties. When booking, look specifically for interior corridor. Request a 2nd floor room away from stairs.',
+    hair: 'Best sustained hair care on the road. Full mirror, outlet at the sink, counter space, time. Hair dryer often provided — call ahead to confirm.',
+    safety: 'Use the deadbolt AND the chain/bar lock every night. Read recent Google reviews before booking. Budget motels can have variable clientele.',
+    tips: [
+      { type: 'normal', text: 'HotelTonight: check after 4pm for same-day discounts — often 40–60% off' },
+      { type: 'normal', text: 'Priceline Express Deals: blind booking with significant discounts' },
+      { type: 'women', text: 'Interior corridor = your door faces a hallway. Meaningfully safer than parking lot-facing rooms.' },
+      { type: 'women', text: 'Request 2nd floor, away from stairs — harder to access externally' },
+      { type: 'hair', text: 'Call ahead to confirm hair dryer — not universal at budget properties' },
+    ]
+  },
+  {
+    id: 'weekly', category: 'paid', hasShower: true,
+    title: 'Weekly/extended stay motels',
+    sub: 'Extended Stay America, InTown Suites, local motels',
+    cost: 'paid', costLabel: '$150–300/week',
+    badges: ['shower','toilet','sink','hair','safe'],
+    overview: 'The long-term budget housing strategy. Weekly rates are dramatically cheaper per night than nightly rates. Kitchenette access reduces food spending significantly.',
+    bathroom: 'Full private bathroom. Extended Stay properties add a kitchenette sink. All motel amenities at weekly lease economics.',
+    women: 'Extended Stay America is interior corridor — safer than exterior motel layouts. Long-term tenants tend to be workers and families. Read recent reviews for any specific property.',
+    hair: 'Best sustained hair care for long stays. The Extended Stay kitchenette sink is deep enough for an in-sink hair rinse when needed.',
+    safety: 'Extended Stay chains: interior corridors, key card access, cameras. Avoid the cheapest independent weekly motels in rough areas.',
+    tips: [
+      { type: 'normal', text: 'Weekly rate is almost never posted — always ask for it' },
+      { type: 'hair', text: 'Extended Stay kitchenette sink: deep enough for a proper hair rinse' },
+      { type: 'women', text: 'Extended Stay chains are meaningfully safer than cheap independent weekly motels' },
+      { type: 'warn', text: '$100/wk independent motels often have maintenance issues and rough populations — vet carefully' },
+    ]
+  },
+  {
+    id: 'apps', category: 'parking', hasShower: false,
+    title: 'Crowd-sourced apps: FreeCampSites, iOverlander, FreeRoam',
+    sub: 'User-reported spots with real hygiene and safety notes',
+    cost: 'free', costLabel: 'Free apps',
+    badges: ['caution'],
+    overview: 'FreeCampSites.net has the best directory of free and low-cost spots. Reviews include real notes on facilities, safety, and conditions. Essential for finding spots beyond the standard list.',
+    bathroom: 'Varies by location — read the reviews. Community members specifically note bathroom access and nearest facilities.',
+    women: 'Read reviews carefully. Solo women travelers leave specific safety notes for each other in the review sections.',
+    hair: 'Dependent on the specific spot. Check reviews for water access notes.',
+    safety: 'Recent reviews (within 6 months) are your safety briefing. Note mentions of suspicious activity or break-ins. The Dyrt Pro includes offline maps for pre-trip review.',
+    tips: [
+      { type: 'normal', text: 'FreeCampSites.net: best overall free spot database' },
+      { type: 'women', text: 'Read ALL recent reviews — solo women travelers leave specific safety intel' },
+      { type: 'normal', text: 'The Dyrt Pro ($36/yr): offline maps + largest review community' },
+      { type: 'normal', text: 'Park4Night: strong for urban boondocking and international travel' },
+      { type: 'normal', text: 'Leave your own reviews — the whole system runs on it' },
+    ]
+  },
+  {
+    id: 'harvest', category: 'parking', hasShower: false,
+    title: 'Harvest Hosts & Boondockers Welcome',
+    sub: 'Free stays at farms, wineries, museums — $99/yr',
+    cost: 'varies', costLabel: '$99/yr',
+    badges: ['toilet','safe'],
+    overview: 'Membership gives access to 5,000+ vetted locations — wineries, breweries, farms, museums. Hosts are community-rated. Generally very safe and memorable.',
+    bathroom: 'Varies by host — check the individual listing. Some hosts explicitly offer guest bathroom access, noted in the listing.',
+    women: 'Hosts are vetted and reviewed. Meaningfully safer than anonymous parking — you are a guest of a business or homeowner.',
+    hair: 'Host-dependent. A solar shower setup in your vehicle handles hair wash days independently.',
+    safety: 'High trust environment — hosts are vetted, rated, reviewed. Book in advance and confirm — don\'t just show up.',
+    tips: [
+      { type: 'normal', text: 'Check the listing for bathroom access — varies significantly host to host' },
+      { type: 'women', text: 'Host reviews often mention how welcoming a location is for solo travelers' },
+      { type: 'normal', text: 'Buy something from the host — expected courtesy, usually enjoyable' },
+      { type: 'normal', text: 'Membership pays for itself after 2–3 nights vs. paying for camping' },
+    ]
+  },
+];
+
+let activeCategory = 'all';
+let expandedId = null;
+let feedbackState = {};
+
+function getBadgeHTML(badges) {
+  const labels = { shower:'shower', toilet:'toilet', sink:'sink', safe:'safe pick', caution:'plan ahead', women:'women', hair:'hair' };
+  return badges.map(b => `<span class="badge b-${b}">${labels[b]||b}</span>`).join('');
+}
+
+function getTipIcon(type) {
+  if (type === 'alert') return '<i class="ti ti-alert-triangle" aria-hidden="true"></i>';
+  if (type === 'warn')  return '<i class="ti ti-alert-circle" aria-hidden="true"></i>';
+  if (type === 'women') return '<i class="ti ti-venus" aria-hidden="true"></i>';
+  if (type === 'hair')  return '<i class="ti ti-wind" aria-hidden="true"></i>';
+  return '<i class="ti ti-point-filled" aria-hidden="true"></i>';
+}
+
+function renderCards() {
+  const container = document.getElementById('cards');
+  let filtered = OPTIONS;
+  if (activeCategory === 'free') filtered = OPTIONS.filter(o => o.cost === 'free');
+  else if (activeCategory === 'shower') filtered = OPTIONS.filter(o => o.hasShower);
+  else if (activeCategory !== 'all') filtered = OPTIONS.filter(o => o.category === activeCategory);
+
+  container.innerHTML = filtered.map(o => {
+    const fs = feedbackState[o.id] || {};
+    return `
+    <div class="option-card${expandedId === o.id ? ' expanded' : ''}" id="card-${o.id}">
+      <div class="card-header" onclick="toggleCard('${o.id}')">
+        <div style="flex:1;min-width:0;">
+          <div class="card-title">${o.title}</div>
+          <div class="card-sub">${o.sub}</div>
+          <div class="badges">${getBadgeHTML(o.badges)}</div>
+        </div>
+        <span class="cost-badge cost-${o.cost}">${o.costLabel}</span>
+      </div>
+      <div class="card-detail${expandedId === o.id ? ' show' : ''}">
+        <div class="detail-section">
+          <div class="detail-title"><i class="ti ti-info-circle" aria-hidden="true"></i> Overview</div>
+          <div class="detail-body">${o.overview}</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-title"><i class="ti ti-droplet" aria-hidden="true"></i> Bathroom &amp; hygiene</div>
+          <div class="detail-body">${o.bathroom}</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-title women"><i class="ti ti-venus" aria-hidden="true"></i> For women</div>
+          <div class="detail-body">${o.women}</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-title hair"><i class="ti ti-wind" aria-hidden="true"></i> Long hair</div>
+          <div class="detail-body">${o.hair}</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-title safety"><i class="ti ti-shield" aria-hidden="true"></i> Safety</div>
+          <div class="detail-body">${o.safety}</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-title"><i class="ti ti-list-check" aria-hidden="true"></i> Field tips</div>
+          <div class="tips">
+            ${o.tips.map(t => `
+              <div class="tip ${t.type !== 'normal' ? t.type : ''}">
+                <span class="tip-icon">${getTipIcon(t.type)}</span>
+                <span>${t.text}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="feedback-bar">
+          <span class="feedback-label">This info:</span>
+          <button class="fb-btn confirm${fs.active==='confirm'?' active':''}" onclick="openFeedback('${o.id}','confirm',event)">
+            <i class="ti ti-thumb-up" aria-hidden="true"></i> Still accurate
+          </button>
+          <button class="fb-btn flag${fs.active==='flag'?' active':''}" onclick="openFeedback('${o.id}','flag',event)">
+            <i class="ti ti-flag" aria-hidden="true"></i> Changed
+          </button>
+          <button class="fb-btn safety${fs.active==='safety'?' active':''}" onclick="openFeedback('${o.id}','safety',event)">
+            <i class="ti ti-alert-triangle" aria-hidden="true"></i> Safety issue
+          </button>
+          <button class="fb-btn tip-btn${fs.active==='tip'?' active':''}" onclick="openFeedback('${o.id}','tip',event)">
+            <i class="ti ti-plus" aria-hidden="true"></i> Add tip
+          </button>
+        </div>
+
+        <div class="feedback-form${fs.formOpen?' show':''}" id="fb-form-${o.id}">
+          <textarea id="fb-msg-${o.id}" rows="3" placeholder="${getFeedbackPlaceholder(fs.active)}"></textarea>
+          <input type="text" id="fb-loc-${o.id}" placeholder="Location (optional — city, state, highway exit...)" />
+          <div class="feedback-actions">
+            <button class="fb-submit" onclick="submitFeedback('${o.id}','${o.title}')">Send feedback</button>
+            <button class="fb-cancel" onclick="cancelFeedback('${o.id}')">Cancel</button>
+          </div>
+        </div>
+        <div class="feedback-thanks${fs.thanks?' show':''}" id="fb-thanks-${o.id}">
+          <i class="ti ti-circle-check" aria-hidden="true"></i> Thanks — your feedback helps keep this accurate for everyone.
+        </div>
+      </div>
+    </div>
+  `}).join('');
+}
+
+function getFeedbackPlaceholder(type) {
+  if (type === 'confirm') return 'Optional: when were you there? Any details?';
+  if (type === 'flag')    return 'What changed? (e.g. "This Walmart now has no overnight signs posted")';
+  if (type === 'safety')  return 'Describe the safety concern — be as specific as possible';
+  if (type === 'tip')     return 'What should other travelers know?';
+  return 'Your feedback...';
+}
+
+function openFeedback(cardId, type, e) {
+  e.stopPropagation();
+  const current = feedbackState[cardId] || {};
+  if (current.active === type && current.formOpen) {
+    feedbackState[cardId] = { ...current, formOpen: false, active: null };
+  } else {
+    feedbackState[cardId] = { ...current, active: type, formOpen: true };
+  }
+  renderCards();
+  setTimeout(() => {
+    const ta = document.getElementById('fb-msg-' + cardId);
+    if (ta) ta.focus();
+  }, 50);
+}
+
+function cancelFeedback(cardId) {
+  feedbackState[cardId] = { ...feedbackState[cardId], formOpen: false, active: null };
+  renderCards();
+}
+
+async function submitFeedback(cardId, cardTitle) {
+  const type = (feedbackState[cardId] || {}).active;
+  const message = document.getElementById('fb-msg-' + cardId)?.value?.trim();
+  const location = document.getElementById('fb-loc-' + cardId)?.value?.trim();
+
+  const btn = document.querySelector(`#card-${cardId} .fb-submit`);
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+
+  try {
+    await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'feedback', card_id: cardId, card_title: cardTitle, type, message, location })
+    });
+  } catch(e) {
+    console.error('Feedback submit error:', e);
+  }
+
+  feedbackState[cardId] = { formOpen: false, active: null, thanks: true };
+  renderCards();
+  setTimeout(() => {
+    if (feedbackState[cardId]) {
+      feedbackState[cardId].thanks = false;
+      const el = document.getElementById('fb-thanks-' + cardId);
+      if (el) el.classList.remove('show');
+    }
+  }, 4000);
+}
+
+function toggleCard(id) {
+  expandedId = expandedId === id ? null : id;
+  renderCards();
+}
+
+function filterTab(el, cat) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  activeCategory = cat;
+  expandedId = null;
+  renderCards();
+}
+
+async function doSearch() {
+  const city = document.getElementById('cityInput').value.trim();
+  if (!city) return;
+  const btn = document.getElementById('searchBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Searching...';
+  const box = document.getElementById('ai-box');
+  box.style.display = 'block';
+  document.getElementById('aiResponse').innerHTML = '<span class="ai-loading">Finding local intel for ' + city + '...</span>';
+  try {
+    const resp = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'search', city })
+    });
+    const data = await resp.json();
+    document.getElementById('aiResponse').textContent = data.result || 'No results returned.';
+  } catch(e) {
+    document.getElementById('aiResponse').textContent = 'Could not load local intel. Check your connection and try again.';
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ti ti-map-search" aria-hidden="true"></i> Find';
+}
+
+document.getElementById('cityInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doSearch();
+});
+
+renderCards();
+</script>
+</body>
+</html>
